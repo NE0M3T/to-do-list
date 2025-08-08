@@ -5,72 +5,32 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
  
 from .models import Tarea, Usuario
-from .responses import GETTareaResponse, GETUsuarioResponse
-from .requests import POSTTareaRequest, PATCHTareaRequest, DELETETareaRequest, POSTUsuarioRequest, PATCHUsuarioRequest, DELETEUsuarioRequest
+from .responses import TareaSerializer, UsuarioSerializer
+from .requests import POSTUsuarioRequest, PATCHUsuarioRequest, DELETEUsuarioRequest
 
 # Create your views here.
 
-class GETTareaView(viewsets.ModelViewSet):
+class TareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
-    serializer_class = GETTareaResponse
-    http_method_names = ['get']
+    serializer_class = TareaSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
-    @swagger_auto_schema(
-        operation_summary="Listar tareas",
-        operation_description="Lista todas las tareas"
-    )
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_summary="Obtener tarea por ID",
-        operation_description="Devuelve una tarea por su ID"
-    )
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
-
-class POSTTareaView(viewsets.ModelViewSet):
-    queryset = Tarea.objects.all()
-    serializer_class = POSTTareaRequest
-    http_method_names = ['post']
-
-    @swagger_auto_schema(
-        operation_summary="Crear una tarea",
-        operation_description="Crea una nueva tarea asignando título, estado, responsable y descripción.",
-        request_body=POSTTareaRequest
-    )
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-class PATCHTareaView(viewsets.ModelViewSet):
-    queryset = Tarea.objects.all()
-    serializer_class = PATCHTareaRequest
-    http_method_names = ['patch']
-
-    @swagger_auto_schema(
-        operation_summary="Actualizar una tarea",
-        operation_description="Actualiza el estado de la tarea",
-        request_body=PATCHTareaRequest
-    )
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+    @action(methods=['get'], detail=False, url_path='deshabilitadas')
+    def deshabilitada(self, request):
+        tareas = self.queryset.filter(estado=False)
+        serializer = self.serializer_class(tareas, many=True)
+        return Response(serializer.data)
     
+    @action(methods=['get'], detail=True)
+    def usuarios(self, request, pk=None):
+        tareas = self.queryset.filter(encargado_id=pk)
+        serializer = self.serializer_class(tareas, many=True)
+        return Response(serializer.data)
 
-class DELETETareaView(viewsets.ModelViewSet):
-    queryset = Tarea.objects.all()
-    serializer_class = DELETETareaRequest
-    http_method_names = ['delete']
-
-    @swagger_auto_schema(
-        operation_summary="Eliminar una tarea",
-        operation_description="Elimina una tarea por ID",
-    )
-    def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
 
 class GETUsuarioView(viewsets.ModelViewSet):
     queryset = Usuario.objects.filter()
-    serializer_class = GETUsuarioResponse
+    serializer_class = UsuarioSerializer
     http_method_names = ['get']
 
     @swagger_auto_schema(
@@ -128,7 +88,7 @@ class DELETEUsuarioView(viewsets.ModelViewSet):
 
 class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Usuario.objects.all()
-    serializer_class = GETUsuarioResponse
+    serializer_class = UsuarioSerializer
     http_method_names = ['get']
 
     @swagger_auto_schema(
@@ -139,5 +99,5 @@ class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=['get'], url_path='tareas')
     def tareas(self, request, pk=None):
         tareas_qs = Tarea.objects.filter(encargado_id=pk).order_by('id')
-        serializer = GETTareaResponse(tareas_qs, many=True)
+        serializer = TareaSerializer(tareas_qs, many=True)
         return Response(serializer.data)

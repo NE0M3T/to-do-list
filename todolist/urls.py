@@ -5,10 +5,7 @@ from todolist import views
 
 
 router = routers.DefaultRouter()
-router.register(r'GET/api/todolist', views.GETTareaView, basename='gettarea')
-router.register(r'POST/api/todolist', views.POSTTareaView, basename='posttarea')
-router.register(r'PATCH/api/todolist', views.PATCHTareaView, basename='patchtarea')
-router.register(r'DELETE/api/todolist', views.DELETETareaView, basename='deletetarea')
+router.register(r'tareas', views.TareaViewSet, basename='tarea')
 
 router.register(r'GET/api/Usuarios', views.GETUsuarioView, basename='getusuario')
 router.register(r'POST/api/Usuarios', views.POSTUsuarioView, basename='postusuario')
