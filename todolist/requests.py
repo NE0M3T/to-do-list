@@ -14,11 +14,8 @@ class PATCHTareaRequest(serializers.ModelSerializer):
         fields = ['id', 'titulo', 'estado','encargado', 'descripcion']
         read_only_fields = ['id', 'titulo','encargado', 'descripcion']
 
-class DELETETareaRequest(serializers.ModelSerializer):
-    class Meta:
-        model = Tarea
-        fields = ['id', 'titulo', 'estado','encargado', 'descripcion']
-        read_only_fields = ['titulo', 'estado','encargado', 'descripcion']
+class DELETETareaRequest(serializers.Serializer):
+    id = serializers.IntegerField()
 
 class POSTUsuarioRequest(serializers.ModelSerializer):
     class Meta:
