@@ -20,10 +20,10 @@ class POSTTareaView(viewsets.ModelViewSet):
 class PATCHTareaView(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
     serializer_class = PATCHTareaRequest
-    http_method_names = ['patch', 'get']
+    http_method_names = ['patch']
     
 
 class DELETETareaView(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
     serializer_class = DELETETareaRequest
-    http_method_names = ['delete', 'get']
+    http_method_names = ['delete']
